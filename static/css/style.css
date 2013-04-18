@@ -1,0 +1,119 @@
+*{margin:0;padding: 0;}
+
+
+body,html{
+	background: #CCC url(../images/background.png) repeat;
+	color: #ede7e5;
+	font-family: Roboto,Helvetica,Arial;
+}
+
+header{
+	background: #bf3c0e;
+	display: block;
+	font-size: 1.3em;
+	font-weight: 400;
+	height: 74px;
+}
+
+header .close{
+	background: #a6340d url(../images/close.png) center center no-repeat;
+	cursor: pointer;
+	float: right;
+	height: 100%;
+	top: 0;
+	width: 74px;
+}
+
+
+header .close:hover{
+	opacity: 0.8;
+}
+
+#main,header{
+	min-width: 1010px;
+}
+
+#logo{
+	height: 100%;
+	margin-left: 5%;
+	max-width: 74px;
+}
+
+#logo img{
+	display: block;
+	max-height: 100%;
+}
+
+#logo,.title{
+	display: inline-block;
+	vertical-align: bottom;
+}
+
+header .title h1, header .title h3{
+	display: inline-block;
+}
+
+/**
+ * COCINA
+**/
+
+.cocina{
+	display: block;
+	width: 100%;
+}
+
+.cocina .title-bar{
+	background: #3a2811;
+	display: block;
+	margin-top: 5%;
+	padding: 1em 0;
+	width: 100%;
+}
+
+
+.cocina .item{
+	background: #73b722;
+	cursor: pointer;
+	display: block;
+	padding: 0.5em 0;
+	width: 100%;
+}
+
+.cocina .item span,.cocina .title-bar span{
+	display: inline-block;
+}
+.tuno,.tcinco{
+	text-align: center;
+	width: 8%;
+}
+
+.tdos{
+	width: 20%;
+}
+
+.ttres,.tcuatro{
+	width: 30%;
+}
+
+.cocina .item.waiting{
+	color:#333333;
+	background: rgba(223,212,28,0.7);
+}
+
+.cocina .item.to-do{
+	color: inherit;
+	background: rgba(207,30,34,0.7);
+}
+
+/**
+ * RECEPCION
+**/
+
+
+
+
+
+::selection{
+	background: #a6340d;
+	color: #FFF;
+}
