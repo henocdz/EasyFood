@@ -1,0 +1,302 @@
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="static/css/style.css"/>
+
+	<link rel="stylesheet" href="static/css/menu.css" />
+	<link rel="stylesheet" href="static/util/alertify/themes/alertify.core.css" />
+	<link rel="stylesheet" href="static/util/alertify/themes/alertify.bootstrap.css" />
+
+
+</head>
+<body>
+
+<div id="fix">
+	<header>
+		<div class="rest-logo">
+
+			<img src="static/imgs/logo_sin_texto.png" alt="EasyFood"/>
+
+		</div>
+		<div class="rest-name">African Tradition</div>
+
+		<div class="options-btn">
+			<img src="static/imgs/gear.png" />
+		</div>
+	</header>
+
+
+
+	<section id="order-info">
+		<span>
+				<strong>Cliente: </strong>
+				Henoc
+			</span>
+
+			<span>
+				<strong>Mesa No.</strong>
+				28
+			</span>
+	</section>
+
+</div>
+	
+	<nav id="menu">
+		<ul>
+			<li><span>Estado de orden</span></li>
+			<li><span>Cerrar Orden</span></li>
+		</ul>
+	</nav>
+
+	<section id="main">
+		<section id="menu-ops">
+			<div id="menu-ops-select">
+				<select>
+					<option>Todos</option>
+					<option>Desayuno</option>
+					<option>Entrada</option>
+					<option>Carnes</option>
+					<option>Postres</option>
+					<option>Bebidas</option>
+				</select>
+			</div>
+			<div id="menu-ops-view">
+				<div class="view-horizontal">
+					<img src="static/imgs/list.png" />
+				</div>
+				<div class="view-block">
+					<img src="static/imgs/grid-large.png" />
+				</div>
+			</div>
+		</section>
+
+		<section id="menu-items">
+
+			<a href="index.html">Inicio</a>
+			<a href="login.html">Sesion</a>
+<!--
+			<article class="menitem list">
+
+				<div class="pic">
+					<img src="" />
+				</div>
+
+				<div class="desc">
+					<h2>Platillo XPlatillo XPlatillo X</h2>
+					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
+				</div>
+
+				<div class="btns">
+					<ul>
+						<li><a href="#">Agregar</a></li>
+						<li><span>$3,000</span></li>
+					</ul>
+				</div>
+			</article>
+-->
+	
+
+			<article class="menitem box">
+
+				<h2>Platillo XPlatillo XPlatillo X</h2>
+				
+				<div class="pic">
+					<img src="" />
+				</div>
+
+				<div class="desc">
+					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
+				</div>
+
+				<div class="btns">
+					<ul>
+						<li><a href="#">Agregar</a></li>
+						<li><span>$3,000</span></li>
+					</ul>
+				</div>
+			</article>
+			<article class="menitem box">
+
+				<h2>Platillo XPlatillo XPlatillo X</h2>
+				
+				<div class="pic">
+					<img src="" />
+				</div>
+
+				<div class="desc">
+					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
+				</div>
+
+				<div class="btns">
+					<ul>
+						<li><a href="#">Agregar</a></li>
+						<li><span>$3,000</span></li>
+					</ul>
+				</div>
+			</article>
+			<article class="menitem box">
+
+				<h2>Platillo XPlatillo XPlatillo X</h2>
+				
+				<div class="pic">
+					<img src="" />
+				</div>
+
+				<div class="desc">
+					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
+				</div>
+
+				<div class="btns">
+					<ul>
+						<li><a href="#">Agregar</a></li>
+						<li><span>$3,000</span></li>
+					</ul>
+				</div>
+			</article>
+
+
+		</section>
+	</section>
+
+
+	<script src="cordova-2.5.0.js"></script>
+	<script src="static/js/jquery-2.0.0.min.js"></script>
+	<script src="static/js/ddslick.min.js"></script>
+	<script src="static/js/socket.io.js"></script>
+	<script type="static/util/alerify/alertify.min.js"></script>
+	<script src="cordova-2.5.0.js"></script>
+	<script>
+
+		if(navigator.notification)
+			document.addEventListener('deviceready',ready,false);
+		else
+			$(goQuery);
+		
+		var socket;
+		function ready(){
+			$(goQuery);
+		}
+
+		function goQuery(){
+
+			try{
+				socket = io.connect("192.168.43.2:8000");
+			}catch(e){
+				console.log(e)
+			}
+
+			var clicks = 0;
+			$(document).on('mousedown',function(){
+
+				clicks++;
+				socket.emit('click',{c:clicks})
+
+
+			})
+
+			$('#menu-ops-select>select').ddslick({
+				onSelected: function(info){ //Cuando cambie seleccion
+					var selectedValue = info.selectedData.value; 
+					/*navigator.notification.alert(selectedValue,null,"Prueba","Hola")*/
+				},
+				width: "100%",
+			});
+
+
+			$('.options-btn').on('click',function(){
+				var nav = $('nav#menu');
+				var visible = nav.css('display');
+				var wiwi = $(document).width();
+				
+				if(visible == 'block'){
+					nav.animate({
+						rigth: -wiwi+'px'
+					},'slow',function(){nav.css('display','none');})
+				}
+				else{
+					nav.animate({
+						rigth:0
+					},'slow',function(){nav.css('display','block');})
+					
+				}
+
+			})
+
+
+			$('.view-block').on('click',function(){
+				$('.menitem').removeClass('list');
+				$('.menitem').addClass('box');
+				
+				$('.menitem').each(function(){
+					var self = $(this);
+					var h2 = self.children('.desc').children('h2')
+					var cpy = h2.clone();
+
+					h2.remove();
+					
+					cpy.prependTo(self)
+				})
+
+				resizeMenu();
+
+			})
+
+			$('.view-horizontal').on('click',function(){
+				$('.menitem').removeClass('box');
+				$('.menitem').addClass('list');
+
+				$('.menitem').each(function(){
+					var self = $(this);
+					var h2 = self.children('h2')
+					var cpy = h2.clone();
+
+					h2.remove();
+					
+					cpy.insertBefore($('.desc p:first-child'))
+				})
+				resizeMenu();
+			})
+
+			repos();
+
+		}
+
+
+		function repos(){
+
+			var fixT = $('#fix').height();
+			$('#main').css('margin-top',fixT+16);
+
+			/* REPOSICIONAR GEAR ICON */
+
+			var gearC = $('.options-btn');
+			var gear = gearC.children('img');
+
+			var gearCH = gearC.height();
+			var gearH = gear.height();
+
+			gear.css('margin-top',(gearCH-gearH)/2)
+
+			resizeMenu();
+			
+		}
+
+
+		function resizeMenu(){
+			/*Resize Menu*/
+			var fixT = $('#fix').height();
+			var menu = $('nav#menu');
+			var docH = $(document).height();
+
+			menu.css({
+				height: docH,
+				top: fixT
+			})
+		}
+
+	</script>
+</body>
+</html>

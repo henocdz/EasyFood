@@ -15,10 +15,12 @@ var express = require('express')
 
 var app = express();
 
+io.sockets.on('connection',function(socket){
+  socket.on('click',function(d){
 
-io.on('connection',function(socket){
+    io.sockets.emit('qlic',{'data': d})
 
-	socket.emit('mensaje',{'m':'WTF'})
+  })
 })
 
 // all environments

@@ -3,13 +3,13 @@ html
   head
     title = title
     link(rel='stylesheet', href='/stylesheets/style.css')
-    script(src='http://localhost:8000/socket.io/socket.io.js')
+    script(src='http://192.168.43.2:8000/socket.io/socket.io.js')
   body
     block content
 
   script
-    var socket = io.connect('http://localhost:8000')
+    var socket = io.connect('http://192.168.43.2:8000')
 
-    socket.on('mensaje',function(e){
-        alert(e.m)
+    socket.on('qlic',function(e){
+      document.write(e.data.c)
     })

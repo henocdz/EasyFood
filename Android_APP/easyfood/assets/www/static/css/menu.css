@@ -1,0 +1,293 @@
+*{margin:0; padding: 0;}
+
+body,html{
+	background: #CCC url('../imgs/background.png') repeat;
+	color: #FFF;
+	font-family: Roboto,Helvetica,Arial;
+	min-width: 240px;
+	overflow-x:hidden;
+}
+
+header{
+	background: #bf3c0e;
+	display: block;
+	
+	width: 100%;
+}
+
+.rest-logo {
+	height: 100%;
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0.5em 0;
+	max-height: 50px;
+}
+
+.rest-name {
+display: inline-block;
+	vertical-align: middle;
+	padding: 0.5em 0;	
+}
+
+.rest-logo img{
+	display: block;
+	height: 50px;
+}
+
+.options-btn{
+	background: #a6340d;
+	height: 100%;
+	width: 10%;
+	padding: 0.5em 0;
+	height: 50px;
+	float:right;
+}
+
+#order-info{
+	background:rgba(232,107,5,0.52);
+	display: block;
+	padding: 0.3em 0;
+	width: 100%;
+}
+
+
+#order-info span:first-child{
+	margin-left: 1em;
+}
+
+#order-info span:last-child{
+	margin-right: 1em;
+	float: right;
+}
+
+#main{
+	display: block;
+	margin: 3em auto;
+	width: 90%;
+	position: relative;
+	z-index: 1;
+}
+
+#menu-ops{
+	display: block;
+	height: 42px;
+}
+
+#menu-ops-select{
+	color:#000;
+	display: inline-block;
+	vertical-align: middle;
+	width: 68%;
+}
+
+#menu-ops-select select{
+	display: block;
+	width: 100%;
+}
+
+#menu-ops-view{
+	background: #bf3c0e;
+	display: inline-block;
+	vertical-align: top;
+	margin-left: 0.5em;
+	width: 27%;
+}
+
+#menu-ops-view>div{
+	display: inline-block;
+	vertical-align: middle;
+	width: 47%;
+
+	padding: 0.5em 0;
+}
+
+#menu-ops-view>div:last-child{
+	float: right;
+}
+
+#menu-ops-view>div img{
+	display: inline-block;
+	/*max-width: 60%;*/
+	height: 50%;
+	margin: 3% auto;
+	display: block;
+}
+
+
+
+#menu-ops-view>div:hover{
+	background: rgba(56,56,56,0.5);
+}
+
+.options-btn img{
+	display: block;
+	vertical-align: middle;
+	margin: 0 auto;
+	height: 40%;
+}
+
+#fix {
+	display: block;
+	width: 100%;
+	position: fixed;
+	z-index: 5;
+	top:0;
+}
+
+#menu-items{
+	display: block;
+	margin-top: 3em;
+}
+
+.btns li a, .btns li span{
+	text-decoration: none;
+	color: #FFF;
+	display: inline-block;
+	vertical-align: bottom;
+	height: 4%;
+}
+
+.menitem{
+	font-size: 0.7em;
+	background: #3a2811;
+}
+
+.menitem.list>div{
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.menitem.list{
+	display: block;
+	margin-top: 2em;
+	height: 70px;
+}
+
+.menitem.list .pic{
+	width: 70px;
+	height: 70px;
+}
+
+.menitem.list .desc{
+	width: 52%;
+	overflow: hidden;
+}
+
+.menitem.list .desc h2{
+	font-size: 1.3em;
+}
+
+.menitem.list .desc h2{
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.menitem.list .btns{
+	float: right;
+	width: 18%;
+	height: 100%;
+}
+
+.menitem.list .btns ul{
+	list-style: none;
+}
+
+.menitem.list .btns ul li{
+	height: 50%;
+	text-align: center;
+	cursor: pointer;
+}
+
+.menitem.list .btns ul li:first-child,.menitem.box .btns ul li:first-child{
+	background: #bf3c0e;
+
+}
+
+.menitem.list .btns ul li:last-child{
+	background: #e86b05;
+}
+
+.menitem.box .btns ul li:last-child{
+	background: #e86b05;
+	float: right;
+}
+
+/****************/
+
+.menitem.box{
+	display: inline-block;
+	margin-bottom: 1em;
+	width: 100%;
+}
+
+.menitem.box>div{
+	display: block;
+	list-style: none;
+}
+.menitem.box ul{
+	background: #bf3c0e;
+}
+
+.menitem.box ul li{
+	padding: 0.8em 0;
+	font-size: 1.2em;
+	display: inline-block;
+	width: 49%;
+	cursor: pointer;
+	text-align: center;
+}
+
+.menitem.box h2,.menitem.box .desc{
+	width: 90%;
+	display: block;
+	margin: 0 auto;
+}
+
+.menitem.box h2{
+	margin-top: 0.5em;
+	text-align: center;
+}
+
+.menitem.box .btns{
+	margin-top: 1em;
+}
+
+.menitem.box .pic{
+	background: #d7d7d7;
+	display: block;
+	margin: 1em auto;
+	width: 150px;
+	height: 150px;
+}
+
+
+/**/
+
+nav {
+	background: #bf3c0e;
+	display: none;
+	position: absolute;
+	top:0;
+	right: 0;
+	z-index: 3;
+	min-width: 70%;
+}
+
+nav ul{
+	list-style: none;
+}
+
+nav ul li{
+	background: rgba(122,39,9,0.4);
+	cursor: pointer;
+	display: block;
+	width: 100%;
+	padding: 1em 0;
+	border-bottom: 2px solid #852706;
+}
+
+nav ul li span{
+	display: block;
+	margin-left: 2%;
+}
