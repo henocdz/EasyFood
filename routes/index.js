@@ -23,7 +23,7 @@ console.log("W.TF")
 		})
 
 
-		res.send(rs)
+		res.render('index',{'titulo':'Hola'});
 	})
 
   

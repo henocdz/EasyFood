@@ -10,18 +10,12 @@ var express = require('express')
   , path = require('path')
   , _ = require('underscore')
   , mysql = require('mysql')
-  , io = require('socket.io').listen(8000);
+  , io = require('socket.io');
 
 
 var app = express();
 
-io.sockets.on('connection',function(socket){
-  socket.on('click',function(d){
 
-    io.sockets.emit('qlic',{'data': d})
-
-  })
-})
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -39,9 +33,20 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
+app.get('/',routes.index);
 app.get('/users', user.list);
 
-http.createServer(app).listen(app.get('port'), function(){
+
+var a = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+io = io.listen(a);
+
+io.sockets.on('connection',function(socket){
+  socket.on('click',function(d){
+
+    io.sockets.emit('qlic',{'data': d})
+
+  })
+})
