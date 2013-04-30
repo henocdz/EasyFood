@@ -4,13 +4,41 @@ html
 		meta(charset="utf-8")
 		title Easy Food
 
-		link(href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500' rel='stylesheet',type='text/css')
-		link(rel="stylesheet",href="static/css/style.css")
+		link(href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500',rel='stylesheet',type='text/css')
+		link(rel="stylesheet",href="stylesheets/style.css")
 
 	body
 		header
-			div(id="logo")
-				img(src="static/images/logo_no_text.png")
-			div(class="title")
-				h1 African Tradition \|
-				h3 &nbsp; Cocina</h3
+			div#logo
+				img(src="images/logo_no_text.png")
+			div.title
+				h1 African Tradition |
+				h3 &nbsp; Cocina
+			div.close
+				img(src="")
+
+
+		section.cocina#main
+
+			div.title-bar
+				span.tuno # Orden
+				span.tdos Chef
+				span.ttres Platillo
+				span.tcuatro Observaciones
+				span.tcinco Cantidad
+			
+			div.item.waiting
+				span.tuno 1
+				span.tdos Dude 1
+				span.ttres Hamburguesa  son queso
+				span.tcuatro Sin mayonesa
+				span.tcinco 1
+
+			div.item.to-do
+				span.tuno 1
+				span.tdos Dude 1
+				span.ttres Hamburguesa  son queso
+				span.tcuatro Sin mayonesa
+				span.tcinco 1
+
+
