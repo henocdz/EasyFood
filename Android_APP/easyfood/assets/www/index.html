@@ -4,17 +4,6 @@
 	<meta charset="utf-8" />
 	<link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="static/css/style.css"/>
-
-	<script src="cordova-2.5.0.js"></script>
-	<script>
-
-		document.addEventListener('deviceready',ready,false);
-
-		function ready(){
-
-		}
-
-	</script>
 </head>
 <body>
 
@@ -25,11 +14,59 @@
 	<section id="main">
 		<h1>¡Bienvenido!</h1>
 
-		<form name="getName" method="get" action="" >
+		<form name="getName" id="getName" method="get" action="" >
 			<input type="text" name="nombre" placeholder="Nombre" />
 			<input type="submit" value="Entrar" />
 		</form>
 
 	</section>
+
+
+	<script src="cordova-2.5.0.js"></script>
+	<script src="static/js/jquery-2.0.0.min.js"></script>
+	<script src="static/js/ddslick.min.js"></script>
+	<script src="static/js/socket.io.js"></script>
+	<script src="static/js/socket.js"></script>
+	<script type="static/util/alerify/alertify.min.js"></script>
+	<script src="static/js/storage.js"></script>
+	<script>
+		if(navigator.notification)
+			document.addEventListener('deviceready',ready,false);
+		else
+			$(goQuery);
+
+		var socket;
+		function ready(){
+			$(goQuery);
+		}
+
+		function goQuery(){
+			
+			socket.emit('new_mesa',{'numero': 1, 'estado': 0})
+			socket.on('mesa_created',function(mesa){
+				initStorage(mesa.obj);
+			})
+
+			$('#getName').on('submit',function(e){
+				e.preventDefault();
+				var nombre = document.getName.nombre.value;
+
+				if(!localStorage['mesa']){
+					alertify.alert('Vuelva a intentarlo en unos segundos');
+					return false;
+				}
+
+
+				socket.emit('new_cliente',{'nombre': nombre,'mesa': localStorage['mesa']})
+
+				socket.on('cliente_created',function(info){
+					createSession(info.orden,nombre);
+					location.href = 'menu.html'
+				})
+
+			})
+
+		}
+	</script>
 </body>
 </html>

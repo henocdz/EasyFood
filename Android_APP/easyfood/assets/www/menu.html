@@ -33,12 +33,12 @@
 	<section id="order-info">
 		<span>
 				<strong>Cliente: </strong>
-				Henoc
+				<span id="cliente-nombre"></span>
 			</span>
 
 			<span>
 				<strong>Mesa No.</strong>
-				28
+				<span id="mesa-numero"></span>
 			</span>
 	</section>
 
@@ -166,137 +166,12 @@
 	<script src="static/js/jquery-2.0.0.min.js"></script>
 	<script src="static/js/ddslick.min.js"></script>
 	<script src="static/js/socket.io.js"></script>
+	<script src="static/js/socket.js"></script>
 	<script type="static/util/alerify/alertify.min.js"></script>
-	<script src="cordova-2.5.0.js"></script>
-	<script>
+	<script src="static/js/storage.js"></script>
+	<script src="static/js/menu.js"></script>
 
-		if(navigator.notification)
-			document.addEventListener('deviceready',ready,false);
-		else
-			$(goQuery);
-		
-		var socket;
-		function ready(){
-			$(goQuery);
-		}
+	
 
-		function goQuery(){
-
-			try{
-				socket = io.connect("192.168.43.2:8000");
-			}catch(e){
-				console.log(e)
-			}
-
-			var clicks = 0;
-			$(document).on('mousedown',function(){
-
-				clicks++;
-				socket.emit('click',{c:clicks})
-
-
-			})
-
-			$('#menu-ops-select>select').ddslick({
-				onSelected: function(info){ //Cuando cambie seleccion
-					var selectedValue = info.selectedData.value; 
-					/*navigator.notification.alert(selectedValue,null,"Prueba","Hola")*/
-				},
-				width: "100%",
-			});
-
-
-			$('.options-btn').on('click',function(){
-				var nav = $('nav#menu');
-				var visible = nav.css('display');
-				var wiwi = $(document).width();
-				
-				if(visible == 'block'){
-					nav.animate({
-						rigth: -wiwi+'px'
-					},'slow',function(){nav.css('display','none');})
-				}
-				else{
-					nav.animate({
-						rigth:0
-					},'slow',function(){nav.css('display','block');})
-					
-				}
-
-			})
-
-
-			$('.view-block').on('click',function(){
-				$('.menitem').removeClass('list');
-				$('.menitem').addClass('box');
-				
-				$('.menitem').each(function(){
-					var self = $(this);
-					var h2 = self.children('.desc').children('h2')
-					var cpy = h2.clone();
-
-					h2.remove();
-					
-					cpy.prependTo(self)
-				})
-
-				resizeMenu();
-
-			})
-
-			$('.view-horizontal').on('click',function(){
-				$('.menitem').removeClass('box');
-				$('.menitem').addClass('list');
-
-				$('.menitem').each(function(){
-					var self = $(this);
-					var h2 = self.children('h2')
-					var cpy = h2.clone();
-
-					h2.remove();
-					
-					cpy.insertBefore($('.desc p:first-child'))
-				})
-				resizeMenu();
-			})
-
-			repos();
-
-		}
-
-
-		function repos(){
-
-			var fixT = $('#fix').height();
-			$('#main').css('margin-top',fixT+16);
-
-			/* REPOSICIONAR GEAR ICON */
-
-			var gearC = $('.options-btn');
-			var gear = gearC.children('img');
-
-			var gearCH = gearC.height();
-			var gearH = gear.height();
-
-			gear.css('margin-top',(gearCH-gearH)/2)
-
-			resizeMenu();
-			
-		}
-
-
-		function resizeMenu(){
-			/*Resize Menu*/
-			var fixT = $('#fix').height();
-			var menu = $('nav#menu');
-			var docH = $(document).height();
-
-			menu.css({
-				height: docH,
-				top: fixT
-			})
-		}
-
-	</script>
 </body>
 </html>
