@@ -24,11 +24,19 @@ h1{
 	text-align: center;
 }
 
-#main input{
+#standby{
 	display: block;
 }
 
-#main input[type=text],#main input[type=password]{
+#main-c{
+	display: none;
+}
+
+#main input,#main-c input{
+	display: block;
+}
+
+#main input[type=text],#main input[type=password],#main-c input[type=text],#main-c input[type=password]{
 	background: transparent;
 	border:0;
 	border-bottom: 1.5px solid #e86b05;
@@ -48,7 +56,7 @@ h1{
 	margin: 2em auto !important; 
 }
 
-#main input[type=submit]{
+#main input[type=submit],#main-c input[type=submit]{
 	background: #3a2811;
 	padding: 0.5em;
 	text-align: center;
@@ -59,4 +67,42 @@ h1{
 	display: block;
 	margin-top: 1em;
 	width: 60%;
+}
+
+#error-fs{
+	display: none;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: rgba(56,56,56,0.7);
+	text-align: center;
+	top:0;
+	left: 0;
+	z-index: 9999;
+}
+
+#error-fs p:first-child{
+	display: block;
+	margin-top: 5%;
+}
+
+
+#reg-info{
+	display: block;
+	width: 80%;
+	margin: 2em auto;
+}
+
+#reg-info label,#reg-info input[type='text']{
+	display: inline-block;
+	font-size: 1em;
+}
+
+#reg-info label:first-child{
+	padding-left: 0.5em;
+}
+
+#reg-info input[type='text']{
+	margin-left: 0.2em;
+	width: 15%;
 }

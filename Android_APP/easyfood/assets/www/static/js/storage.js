@@ -3,6 +3,8 @@ var db = window.localStorage;
 function initStorage(mesa){
 	db['mesa'] = mesa;
 	db['platillos']  = null;
+	db['serverDown'] = false;
+	db['logged'] = false;
 }
 
 function createSession(orden,cliente){
@@ -14,7 +16,7 @@ function createSession(orden,cliente){
 }
 
 function destroySession(){
-	db['logged'] = false;
+	delete db['logged'];
 	db['orden'] = null;
 	db['cliente'] = null;
 	db['estado'] = 0;

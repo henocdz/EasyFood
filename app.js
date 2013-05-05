@@ -11,7 +11,8 @@ var express = require('express')
   , _ = require('underscore')
   , mysql = require('mysql')
   , io = require('socket.io')
-  , core = require('./static/js/clases');
+  , core = require('./static/js/clases')
+  , brain = require('./routes/brain');
 
 
 var app = express();
@@ -35,71 +36,111 @@ if ('development' == app.get('env')) {
 app.get('/',routes.index);
 //app.get('/',routes.index);
 app.get('/users', user.list);
-
+app.get('/get_platillos', brain.platillos )
+app.get('/registrar.json', brain.registrar_mesa )
 
 var a = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
 
+//Clientes con #orden, platillos y socket donde están
 var clientes = {};
+//Almacena objetos mesa con estado y socket al cual comunicar
 var mesas = {};
-
+//Solo debe existir un 'cliente' (techterm) como 'recepcion' al cual comunicar
 var recepcion;
 
-/*
-var nM = new core.Mesa(1);
-var nC = new core.Cliente('Juan',nM);
-*/
-
 //Poner a escuchar en el mismo puerto que la aplicacion
-io = io.listen(a);
+var sio = io.listen(a);
 
-io.sockets.on('connection',function(socket){
+sio.sockets.on('connection',function(socket){
 
-
+  //Registrar nueva mesa
   socket.on('new_mesa',function(info){
+    console.log('==> NUEVA MESA:  ' +  info.numero );
+
     var exists = mesas[info.numero]?true:false;
-    if(exists)
-      socket.emit('mesa_created',{'status': false,'obj': null})
-    else{
-      var new_mesa = new core.Mesa(info.numero,info.estado);
+
+    //Si la mesa ya existe devuelve el objeto con la informacion que se tiene
+    if(exists){
+      //Actualiza el socket de cual se comunica la mesa
+      mesas[info.numero].socket_id = socket.id;
+      //Convierte a cadena el objeto
+      var string_mesa = JSON.stringify(mesas[info.numero])
+      socket.emit('mesa_created',{'status': false,'obj': string_mesa})
+    }else{ //No se tiene registro de esa mesa
+
+      var new_mesa = new core.Mesa(info.numero,info.estado,socket.id);
+      //Numero de mesa que se desea registrar
       mesas[info.numero] = new_mesa;
-      socket.emit('mesa_created',{'status': true,'obj': new_mesa });
+      var string_mesa = JSON.stringify(new_mesa)
+      socket.emit('mesa_created',{'status': true,'obj': string_mesa });
 
       //Guardar en base de datos
-      //io.sockets(recepcion.socket_id).emit('mesa_added',{'mesas': mesas });
+
+      //Si existe recepcion le envía todas las mesas
+      if(recepcion)
+        sio.sockets.socket(recepcion.socket_id).emit('mesa_added',{'mesas': JSON.stringify( mesas )});
     }
   })
 
+  //Se ha establecido el nombre del cliente (Creado un nuevo cliente)
   socket.on('new_cliente',function(info){
-    console.log(info.nombre)
 
     var orden_creada = true;
-    var cliente = new core.Cliente(info.nombre,info.mesa);
+    var mesa = JSON.parse(info.mesa);
+    var cliente = new core.Cliente(info.nombre,mesa);
     
-    mesas[info.mesa.numero].estado = 1;
-
-    
-
+    mesas[mesa.numero].estado = 1;
     cliente.socket_id = socket.id;
 
-    var orden = cliente.crearOrden();
+    //Abrir orden en la base de datos
+    var orden = cliente.crearOrden(); //Falta implementar la funcion
 
+    //Si se registro el cliente en la base de datos
     if(orden.status){
+      //Crea el id del cliente compuesto (solo a nivel logico para el servidor)
       var id_cliente = cliente.nombre + '_' + orden.id;
+      //Guarda el objeto cliente en el id_compuesto
       clientes[id_cliente] = cliente;
+      sio.sockets.socket(recepcion.socket_id).emit('mesa_status_changed',{'mesa': JSON.stringify(mesas[mesa.numero])})
       socket.emit('cliente_created',{'orden': orden.id });
+    }
+
+  })
+
+  //Se agregan platillo(s) a la orden del cliente
+  socket.on('add_platillo', function(info){
+
+  })
+
+  socket.on('mesa_socket',function(info){
+    mesas[info.mesa_id].socket_id = socket.id; 
+  })
+
+
+  socket.on('pick',function(d){ 
+    console.log(' PICKED ==> ' + mesas[d.id].socket_id);
+    sio.sockets.socket(mesas[d.id].socket_id).emit('picked',{});
+  })
+
+  //El cliente cambia de socket (Permite mantener conexion con el cliente independiente de la vista)
+  socket.on('mesa_socket_changed',function(info){
+    //Intenta buscar al cliente 
+    try{
+      clientes[info.cliente].socket_id = socket.id;
+      socket.emit('mesa_socket_changed_ok',{'cliente': clientes[info.cliente] })
+    }catch(e){
+      socket.emit('mesa_socket_changed_ok',{'cliente': null })
     }
   })
 
-  socket.on('mesa_socket_changed',function(info){
-    clientes[info.cliente].socket_id = socket.id;
-    socket.emit('mesa_socket_changed_ok',{'cliente': clientes[info.cliente] })
-  })
-
-  io.sockets.on('recepcion', function(socket){
+  //Se registra un nuevo socket 'recepcion'
+  socket.on('recepcion', function(d){
     recepcion = new core.Recepcionista(socket.id);
+    sio.sockets.socket(recepcion.socket_id).emit('mesa_added',{'mesas': JSON.stringify( mesas )});
+    console.log("\n\n => Recepcion =>> " +  JSON.stringify(recepcion))
   })
 
 })

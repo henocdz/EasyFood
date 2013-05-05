@@ -1,0 +1,115 @@
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8" />
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="static/css/style.css"/>
+	<link rel="stylesheet" href="static/util/alertify/themes/alertify.core.css" />
+	<link rel="stylesheet" href="static/util/alertify/themes/alertify.bootstrap.css" />
+</head>
+<body>
+
+	<header>
+		<img src="static/imgs/logo.png" alt="EasyFood" id="logo-large" />
+	</header>
+
+	<section id="main">
+		<h1>Activar Mesa</h1>
+
+		<form name="createTable" id="createTable" method="get" action="" >
+			<input type="text" name="user" placeholder="Usuario" />
+			<input type="password" name="pwd" id="pwd" placeholder="Contrase&ntilde;a" />
+
+			<div id="reg-info">
+				<label for="no_mesa">No. Mesa</label>
+				<input type="text" name="no_mesa" id="no_mesa" />
+				<label for="capacidad_mesa">Capacidad</label>
+				<input type="text" name="capacidad" id="capacidad_mesa" />
+			</div>
+
+			<input type="submit" value="Activar" />
+		</form>
+
+	</section>
+
+
+	<script src="cordova-2.5.0.js"></script>
+	<script src="static/js/jquery-2.0.0.min.js"></script>
+	<script src="static/js/ddslick.min.js"></script>
+	<script src="static/js/socket.io.js"></script>
+	<script src="static/js/socket.js"></script>
+	<script src="static/util/alertify/alertify.min.js"></script>
+	<script src="static/js/storage.js"></script>
+	<script src="static/util/md5.js"></script>
+	<script>
+		if(navigator.notification)
+			document.addEventListener('deviceready',ready,false);
+		else
+			$(goQuery);
+
+		if(localStorage.logged === true || localStorage.mesa != null)
+			location.href = 'menu.html'
+
+		function ready(){
+			$(goQuery);
+		}
+
+		function goQuery(){
+
+			$('#createTable').on('submit',function(e){
+				e.preventDefault();
+				
+
+				var num = document.createTable.no_mesa.value;
+				var cap = document.createTable.capacidad.value;
+
+				if(num == '' || cap == ''){
+					alertify.alert('Numero de mesa o capacidad inv&aacute;lido')
+					return false;
+				}
+
+				/*VALIDAR ^|^ */
+
+
+				$('#pwd').val(hex_md5($('#pwd').val()))
+
+				var self = $(this);
+				var data = self.serialize();
+
+				$.ajax({
+					beforeSend: function(){
+						self.children('input[type=submit]').attr('disabled');
+					},
+					type: 'GET',
+					data: data,
+					dataType: 'jsonp',
+					url: node + '/registrar.json?callback=?',
+					success: function(data){
+						self.children('input[type=submit]').removeAttr('disabled');
+						
+					 	var data = JSON.parse(data);
+						console.log(data)
+						console.log(data.st)
+						if(data.st){
+
+							socket.emit('new_mesa',{'numero': num, 'estado': 0, 'capacidad': cap })
+
+							socket.on('mesa_created',function(mesa){
+								console.log('=> MESA ');
+								initStorage(mesa.obj);
+								location.href = 'index.html'
+							})
+						}else{
+							alertify.alert('Vuelve a intentarlo');
+
+							$('#pwd').val('');
+						}
+					}
+				}).error(function(ajx,st,k){ alertify.alert('No se puede iniciar sesi&oacute;n' ); })
+
+			})
+
+		}
+	</script>
+</body>
+</html>

@@ -15,10 +15,11 @@ exports.Platillo = function(nombre,tipo){
 	this.disponible = false;
 }
 
-exports.Mesa = function(num){
+exports.Mesa = function(num,edo,_id,cap){
 	this.numero = num;
-	this.estado = 0;
-	this.socket_id = null;
+	this.estado = edo;
+	this.capacidad = cap;
+	this.socket_id = _id;
 }
 
 exports.Menu = function (){
@@ -80,7 +81,7 @@ exports.Cocinero = function(){
 
 exports.Recepcionista = function(socket_id){
 	this.socket_id = socket_id;
-	Empleado.call(this);
+	exports.Empleado.call(this);
 }
 
 exports.Recepcionista.prototype = new exports.Empleado();

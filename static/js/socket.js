@@ -1,6 +1,5 @@
 var socket;
-var node = 'http://127.0.0.1:3000';
-//var node = '192.168.1.119:3000';
+var node = '127.0.0.1:3000';
 try{
 	socket = io.connect(node);
 }catch(e){

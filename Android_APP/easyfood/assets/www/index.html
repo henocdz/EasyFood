@@ -1,9 +1,11 @@
-<html>
-<head>
+<!DOCTYPE html>
+<html><head>
 	<title></title>
 	<meta charset="utf-8" />
 	<link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="static/css/style.css"/>
+	<link rel="stylesheet" href="static/util/alertify/themes/alertify.core.css" />
+	<link rel="stylesheet" href="static/util/alertify/themes/alertify.bootstrap.css" />
 </head>
 <body>
 
@@ -11,14 +13,16 @@
 		<img src="static/imgs/logo.png" alt="EasyFood" id="logo-large" />
 	</header>
 
-	<section id="main">
+	<section id="main-c">
 		<h1>¡Bienvenido!</h1>
-
 		<form name="getName" id="getName" method="get" action="" >
 			<input type="text" name="nombre" placeholder="Nombre" />
 			<input type="submit" value="Entrar" />
 		</form>
+	</section>
 
+	<section id="standby">
+		<h1>Dispositivo no asignado</h1>
 	</section>
 
 
@@ -27,7 +31,7 @@
 	<script src="static/js/ddslick.min.js"></script>
 	<script src="static/js/socket.io.js"></script>
 	<script src="static/js/socket.js"></script>
-	<script type="static/util/alerify/alertify.min.js"></script>
+	<script src="static/util/alertify/alertify.min.js"></script>
 	<script src="static/js/storage.js"></script>
 	<script>
 		if(navigator.notification)
@@ -35,37 +39,68 @@
 		else
 			$(goQuery);
 
-		var socket;
+		if(!localStorage.mesa || localStorage.mesa == null)
+			location.href = 'registrar.html'
+
+		if(JSON.parse(localStorage.logged) === true)
+			location.href = 'menu.html'
+
 		function ready(){
 			$(goQuery);
 		}
 
+		console.log(JSON.parse(localStorage.mesa).numero)
+
+		socket.emit('mesa_socket',{'mesa_id': JSON.parse(localStorage.mesa).numero })
+
+		socket.on('picked',function(){
+
+			$('#standby').slideUp();
+			$('#main-c').slideDown();
+
+			console.log('Recepcion me quiere!')
+		})
+
+
+		socket.on('connect',function(){
+			if(localStorage.serverDown){
+				localStorage.serverDown = false;
+				var m = JSON.parse(localStorage.mesa);
+				socket.emit('mesa_socket',{'mesa_id': JSON.parse(localStorage.mesa).numero })
+				socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+				socket.emit('new_mesa',{'numero': m.numero, 'estado': m.estado, 'capacidad':m.capacidad})
+			}
+		})
+
+		socket.on('disconnect',function(err){ //El servidor cae
+			$('#error-fs').fadeIn();
+			$('#error-fs').html('<p></p><p></p><p>Ups!</p><p>Hemos perdido conexi&oacute;n con el servidor</p><p>Espere un momento por favor.</p>')
+
+			localStorage.serverDown = true;
+		})
+
+
 		function goQuery(){
 			
-			socket.emit('new_mesa',{'numero': 1, 'estado': 0})
-			socket.on('mesa_created',function(mesa){
-				initStorage(mesa.obj);
-			})
-
 			$('#getName').on('submit',function(e){
 				e.preventDefault();
 				var nombre = document.getName.nombre.value;
 
-				if(!localStorage['mesa']){
+				if(!localStorage.mesa){
 					alertify.alert('Vuelva a intentarlo en unos segundos');
 					return false;
 				}
 
+				var mesa = JSON.parse(localStorage.mesa);
+				mesa.estado = 1;
 
-				socket.emit('new_cliente',{'nombre': nombre,'mesa': localStorage['mesa']})
+				socket.emit('new_cliente',{'nombre': nombre, 'mesa': JSON.stringify(mesa) })
 
 				socket.on('cliente_created',function(info){
 					createSession(info.orden,nombre);
 					location.href = 'menu.html'
 				})
-
 			})
-
 		}
 	</script>
 </body>

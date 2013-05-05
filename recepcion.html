@@ -23,38 +23,77 @@
 
 	<section class="recepcion" id="main">
 
-			<article class="mesa" data-status="busy" id="1">
-				<span>1</span>
-			</article>
-			<article class="mesa" data-status="" id="1">
-				<span>2</span>
-			</article>
-			<article class="mesa" data-status="" id="1">
-				<span>3</span>
-			</article>
-			<article class="mesa" data-status="" id="1">
-				<span>4</span>
-			</article>
-			<article class="mesa" data-status="" id="1">
-				<span>5</span>
-			</article><article class="mesa" data-status="busy" id="1">
-				<span>1</span>
-			</article>
-			<article class="mesa" data-status="" id="1">
-				<span>2</span>
-			</article>
-			<article class="mesa" data-status="busy" id="1">
-				<span>3</span>
-			</article>
-			<article class="mesa" data-status="" id="1">
-				<span>4</span>
-			</article>
-			<article class="mesa" data-status="" id="1">
-				<span>5</span>
-			</article>
-
 	</section>
 
+	<div id="error-fs"></div>
 
+	<script src="static/js/jquery-2.0.min.js"></script>
+	<script src="static/js/socket.io.js"></script>	
+	<script src="static/js/socket.js"></script>
+
+
+	<script>
+
+		$(function(){
+			var serverDown = false;
+			//Indica al servidor recepcion iniciada
+			socket.emit('recepcion',{})
+
+			socket.on('mesa_status_changed',function(data){
+				var mesa = JSON.parse(data.mesa);
+				var n = mesa.numero;
+				console.log(mesa)
+				$('.mesa#'+n).attr('data-status',(mesa.estado==1?'busy':'free'));
+			})
+
+
+			socket.on('connect',function(){
+				if(serverDown)
+					location.reload();
+			})
+
+			socket.on('disconnect',function(err){ //El servidor cae
+				$('#error-fs').fadeIn();
+				$('#error-fs').html('<p></p><p></p><p>Ups!</p><p>Hemos perdido conexi&oacute;n con el servidor</p><p>Espere un momento por favor.</p>')
+
+				serverDown = true;
+			})
+
+			//Se reciben mesas agregadas
+			socket.on('mesa_added',function(data){
+
+				//Convierte las mesas en objetos, originalmente cadenas
+				var mesas = JSON.parse(JSON.parse(JSON.stringify(data.mesas)));
+				var docContainer = $('#main');
+				//Limpia contenedor
+				docContainer.text('');
+				//Agrega cada mesa a la interfaz
+				$.each(mesas,function(i,mesa){ //Recibe mesas ordenadas > |a| <
+
+					var ms = JSON.parse(JSON.stringify(mesa));
+					var mesa_art = $('<article class="mesa" data-status="'+ (ms.estado?'busy':'') +'" id="'+ ms.numero +'"><span>'+ ms.numero +'</span></article>');
+
+					//Agregar nuevo objeto
+					docContainer.append(mesa_art);
+
+				})
+				reAddEvents();
+			})
+
+		})
+
+
+		function reAddEvents(){ //Agrega eventos a todos los objetos mesa
+			$('.mesa').on('click',function(){
+
+				var self = $(this);
+				if(self.attr('data-status') === 'busy')
+					return false;
+
+				console.log("=> "+self.attr('id'))
+				socket.emit('pick',{'id': self.attr('id') })
+			})
+		}
+	</script>
 </body>
 </html>
