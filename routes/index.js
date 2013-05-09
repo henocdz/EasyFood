@@ -10,7 +10,6 @@ var db = mysql.createConnection({user: 'root', password: '', database: 'roofdier
 
 exports.index = function(req, res){
 
-console.log("W.TF")
 	db.query('SELECT * FROM miembro',function(err,results,r){
 		rs = []
 		_.each(results, function(dir,index){

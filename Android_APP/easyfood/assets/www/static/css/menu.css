@@ -15,6 +15,10 @@ header{
 	width: 100%;
 }
 
+#alertify{
+	color: #000;
+}
+
 .rest-logo {
 	height: 100%;
 	display: inline-block;
@@ -264,7 +268,7 @@ display: inline-block;
 
 /**/
 
-nav {
+nav#menu {
 	background: #bf3c0e;
 	display: none;
 	position: absolute;
@@ -274,11 +278,11 @@ nav {
 	min-width: 70%;
 }
 
-nav ul{
+nav#menu ul{
 	list-style: none;
 }
 
-nav ul li{
+nav#menu ul li{
 	background: rgba(122,39,9,0.4);
 	cursor: pointer;
 	display: block;
@@ -287,7 +291,39 @@ nav ul li{
 	border-bottom: 2px solid #852706;
 }
 
-nav ul li span{
+nav#menu ul li span{
 	display: block;
 	margin-left: 2%;
+}
+
+
+button.confirmar_btn{
+	display: none;
+	color: #FFF;
+	cursor: pointer;
+	font-weight: bold;
+	margin: 1em auto;
+	padding: 0.5em;
+	background: #e86b05;
+	text-align: center;
+	width: 100%;
+	outline: 0;
+	border:0;
+}
+
+
+#loader{
+	position: fixed;
+	top:0;
+	display: none;
+	background: rgba(0,0,0,0.8);
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	text-align: center;
+}
+
+#loader>h2{
+	display: block;
+	margin-top: 40%;
 }

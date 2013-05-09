@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="static/css/menu.css" />
 	<link rel="stylesheet" href="static/util/alertify/themes/alertify.core.css" />
 	<link rel="stylesheet" href="static/util/alertify/themes/alertify.bootstrap.css" />
-
+	
 
 </head>
 <body>
@@ -51,16 +51,23 @@
 		</ul>
 	</nav>
 
+	<div id="loader">
+			<h2>Cargando platillos...</h2>
+		</div>
+
+
 	<section id="main">
+
+
 		<section id="menu-ops">
 			<div id="menu-ops-select">
 				<select>
-					<option>Todos</option>
-					<option>Desayuno</option>
-					<option>Entrada</option>
-					<option>Carnes</option>
-					<option>Postres</option>
-					<option>Bebidas</option>
+					<option value="">Todos</option>
+					<option value="0">Desayuno</option>
+					<option value="1">Entrada</option>
+					<option value="2">Carnes</option>
+					<option value="3">Postres</option>
+					<option value="4">Bebidas</option>
 				</select>
 			</div>
 			<div id="menu-ops-view">
@@ -73,90 +80,9 @@
 			</div>
 		</section>
 
+		<button class="confirmar_btn">Confirmar Orden</button>
+
 		<section id="menu-items">
-
-			<a href="index.html">Inicio</a>
-			<a href="login.html">Sesion</a>
-<!--
-			<article class="menitem list">
-
-				<div class="pic">
-					<img src="" />
-				</div>
-
-				<div class="desc">
-					<h2>Platillo XPlatillo XPlatillo X</h2>
-					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
-				</div>
-
-				<div class="btns">
-					<ul>
-						<li><a href="#">Agregar</a></li>
-						<li><span>$3,000</span></li>
-					</ul>
-				</div>
-			</article>
--->
-	
-
-			<article class="menitem box">
-
-				<h2>Platillo XPlatillo XPlatillo X</h2>
-				
-				<div class="pic">
-					<img src="" />
-				</div>
-
-				<div class="desc">
-					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
-				</div>
-
-				<div class="btns">
-					<ul>
-						<li><a href="#">Agregar</a></li>
-						<li><span>$3,000</span></li>
-					</ul>
-				</div>
-			</article>
-			<article class="menitem box">
-
-				<h2>Platillo XPlatillo XPlatillo X</h2>
-				
-				<div class="pic">
-					<img src="" />
-				</div>
-
-				<div class="desc">
-					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
-				</div>
-
-				<div class="btns">
-					<ul>
-						<li><a href="#">Agregar</a></li>
-						<li><span>$3,000</span></li>
-					</ul>
-				</div>
-			</article>
-			<article class="menitem box">
-
-				<h2>Platillo XPlatillo XPlatillo X</h2>
-				
-				<div class="pic">
-					<img src="" />
-				</div>
-
-				<div class="desc">
-					<p>Delicioso platillo con un toque de nuestro chef experto en este tipo de </p>
-				</div>
-
-				<div class="btns">
-					<ul>
-						<li><a href="#">Agregar</a></li>
-						<li><span>$3,000</span></li>
-					</ul>
-				</div>
-			</article>
-
 
 		</section>
 	</section>

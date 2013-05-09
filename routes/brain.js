@@ -7,9 +7,14 @@ exports.platillos = function(req,res){
 	var db = mysql.createConnection({user: 'root', password: '', database: 'easy_food' });
 
 	var rs;
-	db.query('SELECT * FROM platillo',function(err,data){
+	var qry = 'SELECT * FROM platillo';
+
+	if(req.query['tipo'])
+		qry += ' WHERE tipo = ' + req.query['tipo'];
+
+	db.query(qry,function(err,data){
 		rs = data;
-		res.send(rs);
+		res.send( req.query['callback'] + '( '+ JSON.stringify(data) +' )')
 	})
 }
 
