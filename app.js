@@ -54,6 +54,11 @@ var recepcion;
 //Poner a escuchar en el mismo puerto que la aplicacion
 var sio = io.listen(a);
 
+
+sio.sockets.on('disconnect',function(socket){
+  console.log(JSON.parse(i))
+})
+
 sio.sockets.on('connection',function(socket){
 
   //Registrar nueva mesa

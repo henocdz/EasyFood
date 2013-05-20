@@ -2,6 +2,7 @@ var db = window.localStorage;
 
 function initStorage(mesa){
 	db['mesa'] = mesa;
+	db['logged'] = false;
 	db['platillos']  = null;
 	db['serverDown'] = false;
 	db['logged'] = false;
@@ -12,7 +13,7 @@ function createSession(orden,cliente){
 	db['orden'] = orden;
 	db['cliente'] = cliente;
 	db['estado'] = 1;
-	db['platillos']  = {}
+	db['platillos']  = JSON.stringify({});
 }
 
 function destroySession(){

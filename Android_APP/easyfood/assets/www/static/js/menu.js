@@ -36,14 +36,18 @@ function goQuery(){
 
 
 	socket.on('connect',function(){
+
+
 		//Al reconectar el servidor
 		if(localStorage.serverDown){
 			localStorage.serverDown = false;
-			var m = JSON.parse(localStorage.mesa);
+			console.log(localStorage.mesa)
+			//var m = JSON.parse(localStorage.mesa);
 			//Se registra la mesa
-			socket.emit('mesa_socket',{'mesa_id': JSON.parse(localStorage.mesa).numero })
-			socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+			alertify.alert(m.numero)
 			socket.emit('new_mesa',{'numero': m.numero, 'estado': m.estado, 'capacidad':m.capacidad})
+			socket.emit('mesa_socket',{'mesa_id': m.numero })
+			socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
 		}
 	})
 
@@ -117,12 +121,13 @@ function goQuery(){
 		$('.menitem').each(function(){
 			var self = $(this);
 			var h2 = self.children('h2')
+
 			//Clona el titulo del elemento
 			var cpy = h2.clone();
 			//Elimina el titulo actual
 			h2.remove();
 			//Lo agrega antes de la descripcion
-			cpy.insertBefore($('.desc p:first-child'))
+			cpy.insertBefore(self.children('.desc').children('p').eq(0))
 		})
 		resizeMenu();
 	}) //Fin vista horizonta
@@ -144,8 +149,6 @@ function repos(){
 	var gearCH = gearC.height();
 	var gearH = gear.height();
 	gear.css('margin-top',(gearCH-gearH)/2)
-
-
 
 	resizeMenu();
 }
@@ -212,7 +215,7 @@ function agregarPlatillosGUI(platillos){
 
 	$.each(platillos,function(i,p){
 
-		platillo = $('<article class="menitem box" id="'+p.id+'"> <h2>'+p.nombre+'</h2> <div class="pic"> <img src="'+p.imagen+'" /> </div> <div class="desc"> <p>'+p.descripcion+'</p> </div> <div class="btns"> <ul> <li class="add-platillo"><a href="#">Agregar</a></li> <li><span>$'+p.precio+'</span></li> </ul> </div>	</article>');
+		platillo = $('<article class="menitem box" id="'+p.id+'"> <h2>'+p.nombre+'</h2> <div class="pic"> <img src="'+node+'/images/'+p.imagen+'" /> </div> <div class="desc"> <p>'+p.descripcion+'</p> </div> <div class="btns"> <ul> <li class="add-platillo"><a href="#">Agregar</a></li> <li><span>$'+p.precio+'</span></li> </ul> </div>	</article>');
 
 		platillo.appendTo($('#menu-items'));
 	})
@@ -252,5 +255,6 @@ function obtenerPlatillos(tipo){
  * Notificar cambio en estado de platillo
  * Obtener estado de platillos (Decidir nueva pag, superposicion)
  * Cerrar Orden
+ * Eliminar del servidor si se desconecta la mesa y notificar recepcion
  *
 */
