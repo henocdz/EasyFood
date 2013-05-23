@@ -18,13 +18,23 @@ function goQuery(){
 		location.href = 'registrar.html'
 	}
 
+
+	localStorage.platillos = JSON.stringify({});
+
 	//Asignar nombre de cliente y numero de mesa en GUI
 	$('#cliente-nombre').text(localStorage.cliente);
 	$('#mesa-numero').text(JSON.parse(localStorage.mesa).numero);
 
 
+	var m = JSON.parse(localStorage.mesa);
+
+	socket.emit('new_mesa',{'numero': m.numero, 'estado': 1, 'capacidad':m.capacidad})
+			
 	//Se indica al servidor que la mesa N ha cambiado de socket (pagina)
-	socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+	socket.on('mesa_created',function(e){
+		socket.emit('mesa_socket',{'mesa_id': m.numero })
+		//socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+	})
 
 	//Se registra el cambio correcto del socket
 	socket.on('mesa_socket_changed_ok',function(info){
@@ -37,17 +47,22 @@ function goQuery(){
 
 	socket.on('connect',function(){
 
-
+		$('#error-fs').fadeOut();
 		//Al reconectar el servidor
 		if(localStorage.serverDown){
 			localStorage.serverDown = false;
-			console.log(localStorage.mesa)
-			//var m = JSON.parse(localStorage.mesa);
+			var m = JSON.parse(localStorage.mesa);
 			//Se registra la mesa
-			alertify.alert(m.numero)
-			socket.emit('new_mesa',{'numero': m.numero, 'estado': m.estado, 'capacidad':m.capacidad})
-			socket.emit('mesa_socket',{'mesa_id': m.numero })
-			socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+			socket.emit('new_mesa',{'numero': m.numero, 'estado': 1, 'capacidad':m.capacidad})
+			
+
+			socket.on('mesa_created',function(e){
+				socket.emit('mesa_socket',{'mesa_id': m.numero });
+				//socket.emit('new_cliente',{'nombre': localStorage.cliente, 'mesa': localStorage.mesa })
+				//socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+			})
+
+			
 		}
 	})
 
@@ -58,6 +73,43 @@ function goQuery(){
 
 		localStorage.serverDown = true;
 	}) //Fin socket desconectado
+
+	socket.on('closeOrder',closeOrder);
+
+	$('.confirmar_btn').on('click',function(){
+
+
+		var ps = JSON.parse(localStorage.platillos);
+		if(JSONlength(ps) > 0){
+
+			$('#error-fs').fadeIn();
+			$('#error-fs').html('<h2>Espere un momento...</h2>')
+
+
+			socket.emit('add_platillo',{'platillos': localStorage.platillos,'cliente': localStorage.cliente + '_' + localStorage.orden });
+
+			socket.on('platillos_agregados',function(){
+				$('#error-fs').fadeOut();
+				$('.p-orden').remove();
+				$('.confirmar_btn').fadeOut();
+
+				alertify.success('Platillos agregados');
+
+				localStorage.platillos = JSON.stringify({});
+
+				socket.off('platillos_agregados')
+				
+			})
+
+		}else{
+			$(this).fadeOut();
+		}
+
+		return false;
+
+	})
+
+
 
 	$('#menu-ops-select>select').ddslick({
 		onSelected: function(info){ //Cuando cambie seleccion
@@ -136,6 +188,29 @@ function goQuery(){
 
 } //Fin goQuery
 
+
+
+function closeOrder(){
+
+	localStorage.cliente = null;
+	localStorage.logged = false;
+	localStorage.platillos = JSON.stringify({});
+	var m = JSON.parse(localStorage.mesa);
+
+	localStorage.estado = 0;
+	m.estado = 0;
+
+	localStorage.mesa = JSON.stringify(m);
+
+	location.href = './index.html';
+}
+
+function preCloseOrder(){
+	//Notificar al servidor que se quiere cerrar cuenta / Eliminar todo del servidor / Enviar a Caja
+	//Reiniciar dispositivo desde caja
+}
+
+
 function repos(){
 
 	var fixT = $('#fix').height();
@@ -161,37 +236,68 @@ function platilloEvent(){ //Evento para agregar platillos al menu
 		if(!$('#alertify').has('alertify-isHidden'))
 			return false;
 
+		var d = new Date();
 		var self = $(this); //Elemento seleccionado hijo del div platillo
 		var ref_platillo = self.parents('.menitem'); //Obtiene padre que contiene ID
-		var id_platillo = ref_platillo.attr('id'); //Obtiene ID del platillo seleccionado
-		var platillo_str = ref_platillo.children('h2').text(); //Obtiene nombre del platillo
-		
+		var id_platillo = ref_platillo.attr('id')+"_"+d.getTime(); //Obtiene ID del platillo seleccionado
+		var platillo_str = $(ref_platillo.find('h2')[0]).text(); //Obtiene nombre del platillo
+		var cost = $(ref_platillo.find('.cost')[0]).text();
+
+
+
 		var q = 1, g = true;
+		alertify.set({ labels: {
+			ok: 'Agregar',
+			cancel: 'No agregar'
+		}})
 
-		alertify.prompt('Cantidad',function(e,str){ //Obtiene cantidad 
+		alertify.prompt('Platillo agregado. Añada Observaciones',function(e,str){ //Obtiene cantidad 
 
-			if(e){ //Si se indico cantidad
-				if(!(q = parseInt(str))) //La cantidad no es valida
-					g = false;
-			}else //No se indico cantidad
-				q  = null;
+				if(str === 'Algo en especial sobre este platillo?')
+					str = undefined;
+
+				var orden_n = JSON.parse(localStorage.platillos);
+
+				if(e)
+					orden_n[id_platillo] = [str,platillo_str];
+				else
+					orden_n[id_platillo] = [null,platillo_str];
+
+				localStorage.platillos = JSON.stringify(orden_n);
 
 
-			if(!g) //Cantidad no valida
-				alertify.error('Cantidad no v&aacute;lida');
-			else if(q != null){//Cantidad valida
+				var nuevo_article = $('<article id="'+id_platillo+'" class="p-orden"><div class="p-ordered"><span class="po-titulo">'+platillo_str+ ' - '+cost+'</span><span class="po-del"><img src="static/imgs/close.png" alt="Eliminar" /></span></div>' +(str!=undefined?('<p class="p-desc">'+str+'</p>'):'')+'</article>');
+				nuevo_article.appendTo('#ordenados');
 
-				if(orden_n.hasOwnProperty(id_platillo)) //Ya se ha agreda este platillo
-					orden_n[id_platillo] += q;
-				else //Primer seleccion de platillo
-					orden_n[id_platillo] = q;
 
 				$('.confirmar_btn').fadeIn();
 
-				alertify.success('Agregado(s) <strong>' + q + '</strong> platillo(s) <strong>"'+ platillo_str+'"</strong>')
-			}
+				alertify.success('Agregado <strong>"'+ platillo_str+'"</strong>')
+			//}
 				
-		},"1");	 //Fin obtener cantidad
+
+				$('.po-del').on('click',function(){
+					var self = $(this);
+
+					var parent = self.parents('.p-orden');
+					var id = parent.attr('id');
+
+					var plats = JSON.parse(localStorage.platillos);
+
+					if(delete plats[id]){
+						alertify.error('Platillo eliminado');
+						localStorage.platillos = JSON.stringify(plats);
+						parent.fadeOut('fast',function(){ $(this).remove();	})
+					}
+
+				})
+
+		},"Algo en especial sobre este platillo?");	 //Fin obtener cantidad
+
+		alertify.set({ labels: {
+			ok: 'Ok',
+			cancel: 'Cancelar'
+		}})
 	})// add-platillo.on(click)
 }//Fin de funcion
 
@@ -215,7 +321,7 @@ function agregarPlatillosGUI(platillos){
 
 	$.each(platillos,function(i,p){
 
-		platillo = $('<article class="menitem box" id="'+p.id+'"> <h2>'+p.nombre+'</h2> <div class="pic"> <img src="'+node+'/images/'+p.imagen+'" /> </div> <div class="desc"> <p>'+p.descripcion+'</p> </div> <div class="btns"> <ul> <li class="add-platillo"><a href="#">Agregar</a></li> <li><span>$'+p.precio+'</span></li> </ul> </div>	</article>');
+		platillo = $('<article class="menitem box" id="'+p.id+'"> <h2>'+p.nombre+'</h2> <div class="pic"> <img src="'+node+'/images/'+p.imagen+'" /> </div> <div class="desc"> <p>'+p.descripcion+'</p> </div> <div class="btns"> <ul> <li class="add-platillo"><a href="#">Agregar</a></li> <li class="cost"><span>$'+p.precio+'</span></li> </ul> </div>	</article>');
 
 		platillo.appendTo($('#menu-items'));
 	})
@@ -243,6 +349,9 @@ function obtenerPlatillos(tipo){
 
 			agregarPlatillosGUI(data);
 		}
+	}).error(function(){
+		$('#loader').fadeOut();
+		alertify.alert('Lo sentimos ha ocurrido un error. Vuelve a intentar.')
 	})
 }
 
@@ -250,11 +359,7 @@ function obtenerPlatillos(tipo){
 
 /*
  *
- * Enviar platillos al servidor
- * Asignar platillo a cocinero
- * Notificar cambio en estado de platillo
  * Obtener estado de platillos (Decidir nueva pag, superposicion)
  * Cerrar Orden
- * Eliminar del servidor si se desconecta la mesa y notificar recepcion
  *
 */

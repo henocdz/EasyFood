@@ -34,10 +34,19 @@
 
 	<script>
 
+		function juanito (e) {
+			
+			return false;
+		}
+
 		$(function(){
 			var serverDown = false;
 			//Indica al servidor recepcion iniciada
 			socket.emit('recepcion',{})
+
+			socket.on('mesa_rm',function(s){
+				$('#'+s.mesa).fadeOut(40000,function(){});				
+			})
 
 			socket.on('mesa_status_changed',function(data){
 				var mesa = JSON.parse(data.mesa);
@@ -45,6 +54,12 @@
 				console.log(mesa)
 				$('.mesa#'+n).attr('data-status',(mesa.estado==1?'busy':'free'));
 			})
+
+			/*
+			$('.mesa').on('contextmenu',function(e){
+				e.preventDefault();
+				return false;
+			})*/
 
 
 			socket.on('connect',function(){
@@ -68,10 +83,11 @@
 				//Limpia contenedor
 				docContainer.text('');
 				//Agrega cada mesa a la interfaz
+				console.log('MESAS: ' + JSON.stringify(mesas))
 				$.each(mesas,function(i,mesa){ //Recibe mesas ordenadas > |a| <
 
 					var ms = JSON.parse(JSON.stringify(mesa));
-					var mesa_art = $('<article class="mesa" data-status="'+ (ms.estado?'busy':'') +'" id="'+ ms.numero +'"><span>'+ ms.numero +'</span></article>');
+					var mesa_art = $('<article class="mesa" oncontextmenu="juanito" data-status="'+ (ms.estado?'busy':'') +'" id="'+ ms.numero +'"><span>'+ ms.numero +'</span></article>');
 
 					//Agregar nuevo objeto
 					docContainer.append(mesa_art);
@@ -90,7 +106,7 @@
 				if(self.attr('data-status') === 'busy')
 					return false;
 
-				console.log("=> "+self.attr('id'))
+				//console.log("=> "+self.attr('id'))
 				socket.emit('pick',{'id': self.attr('id') })
 			})
 		}

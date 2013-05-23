@@ -54,6 +54,8 @@
 			$(goQuery);
 		}
 
+		
+
 		function goQuery(){
 
 			$('#createTable').on('submit',function(e){
@@ -88,15 +90,15 @@
 						self.children('input[type=submit]').removeAttr('disabled');
 						
 					 	var data = JSON.parse(data);
-						console.log(data)
-						console.log(data.st)
+		
 						if(data.st){
 
 							socket.emit('new_mesa',{'numero': num, 'estado': 0, 'capacidad': cap })
 
 							socket.on('mesa_created',function(mesa){
-								console.log('=> MESA ');
 								initStorage(mesa.obj);
+								localStorage.capacidad = cap;
+								$('#pwd').val('');
 								location.href = 'index.html'
 							})
 						}else{

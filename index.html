@@ -3,7 +3,7 @@
 	<meta charset="utf-8"/>
 	<title>Easy Food</title>
 
-	<link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700,500' rel='stylesheet' />
 	<link rel="stylesheet" href="static/css/style.css"/>
 
 </head>
@@ -27,32 +27,110 @@
 
 		<div class="title-bar">
 			<span class="tuno"># Orden</span>
-			<span class="tdos">Chef</span>
 			<span class="ttres">Platillo</span>
 			<span class="tcuatro">Observaciones</span>
 			<span class="tcinco">Cantidad</span>
 		</div>
 
-		<article class="item waiting">
-			<span class="tuno">1</span>
-			<span class="tdos">Dude 1</span>
-			<span class="ttres">Hamburguesa con queso</span>
-			<span class="tcuatro">Sin mayonesa</span>
-			<span class="tcinco">1</span>
-		</article>
+		
 
-		<article class="item to-do">
-			<span class="tuno">2</span>
-			<span class="tdos">Dude Dude Due 2</span>
-			<span class="ttres">Hamburguesa sencilla</span>
-			<span class="tcuatro">-</span>
-			<span class="tcinco">1</span>
-		</article>
+		
 
 		<!-- /COCINA -->
 
 	</section>
 
+
+	<script src="static/js/jquery-2.0.min.js"></script>
+	<script src="static/js/socket.io.js"></script>	
+	<script src="static/js/socket.js"></script>
+
+	<script>
+
+		$(function(){
+
+
+			serverDown = false;
+				/*
+			agregarPlatilloGUI(2,69,'huevos con tocino','',1)
+			agregarPlatilloGUI(2,69,'huevos con tocino','',1)
+			agregarPlatilloGUI(2,69,'huevos con tocino','',1)
+			agregarPlatilloGUI(2,69,'huevos con tocino','',1)
+			agregarPlatilloGUI(2,69,'huevos con tocino','sin huevos',1)
+			agregarPlatilloGUI(2,69,'huevos con tocino','',1)
+			agregarPlatilloGUI(2,69,'huevos con tocino','',1)
+			*/
+			socket.emit('cocina',{});
+
+			socket.on('new_platillo',function(info){
+				var plat = JSON.parse(info.platillo);
+
+				console.log(info.platillo)
+
+				//id,orden,nombre,obs,qty
+				agregarPlatilloGUI(info.platillo_id,plat.id,info.orden,plat.nombre,plat.observaciones,1)
+
+			})
+
+
+			socket.on('connect',function(){
+				if(serverDown)
+					location.reload();
+			})
+
+			socket.on('disconnect',function(err){ //El servidor cae
+				$('#error-fs').fadeIn();
+				$('#error-fs').html('<p></p><p></p><p>Ups!</p><p>Hemos perdido conexi&oacute;n con el servidor</p><p>Espere un momento por favor.</p>')
+
+				serverDown = true;
+			})
+
+
+		})
+
+
+		function agregarPlatilloGUI(id,did,orden,nombre,obs,qty){
+
+			var nuevo = $('<article class="item to-do" data-id="'+did+'" id="'+id+'"><span class="tuno">'+orden+'</span><span class="ttres">'+nombre+'</span><span class="tcuatro">'+(obs==''?'-':obs)+'</span><span class="tcinco">'+qty+'</span></article>');
+
+			$('#main').append(nuevo);
+
+
+			nuevo.on('click',function(){
+
+
+				var self = $(this);
+
+				if(self.hasClass('to-do')){
+
+					
+
+					$.get(node+'/estado_platillo',{id: self.attr('id'), e: 1},function(d){
+						console.log('HOLA');
+						self.removeClass('to-do');
+						self.addClass('waiting');
+					},'jsonp')
+
+					return;
+				}else if(self.hasClass('waiting')){
+
+					$.get(node+'/estado_platillo',{id: self.attr('id'), e: 2},function(){
+						self.slideUp('slow',function(){
+							self.remove();
+						});
+					},'jsonp')
+
+					
+				}
+					
+
+
+			})
+
+		}
+
+
+	</script>
 
 </body>
 </html>

@@ -79,6 +79,10 @@ header .title h1, header .title h3{
 	width: 100%;
 }
 
+.cocina .item:hover{
+	opacity: 0.5;
+}
+
 .cocina .item span,.cocina .title-bar span{
 	display: inline-block;
 }
@@ -114,6 +118,7 @@ header .title h1, header .title h3{
 .recepcion{
 	display: block;
 	width: 80%;
+	padding: 0 5%;
 	margin:5% auto;
 }
 

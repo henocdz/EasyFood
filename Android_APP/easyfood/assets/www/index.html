@@ -25,6 +25,9 @@
 		<h1>Dispositivo no asignado</h1>
 	</section>
 
+	<div id="error-fs"></div>
+
+
 
 	<script src="cordova-2.5.0.js"></script>
 	<script src="static/js/jquery-2.0.0.min.js"></script>
@@ -45,42 +48,64 @@
 		if(JSON.parse(localStorage.logged) === true)
 			location.href = 'menu.html'
 
+
+		
+		
 		function ready(){
 			$(goQuery);
+
 		}
 
-		console.log(JSON.parse(localStorage.mesa).numero)
+		//console.log(JSON.parse(localStorage.mesa).numero)
 
-		socket.emit('mesa_socket',{'mesa_id': JSON.parse(localStorage.mesa).numero })
 
 		socket.on('picked',function(){
-
 			$('#standby').slideUp();
 			$('#main-c').slideDown();
-
-			console.log('Recepcion me quiere!')
+			//console.log('Recepcion me quiere!')
 		})
 
 
 		socket.on('connect',function(){
+			
+			$('#error-fs').fadeOut();
+
 			if(localStorage.serverDown){
 				localStorage.serverDown = false;
 				var m = JSON.parse(localStorage.mesa);
-				socket.emit('mesa_socket',{'mesa_id': JSON.parse(localStorage.mesa).numero })
-				socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+				
 				socket.emit('new_mesa',{'numero': m.numero, 'estado': m.estado, 'capacidad':m.capacidad})
+				//console.log('Re. registro')
+				socket.on('mesa_created',function(){
+					socket.emit('mesa_socket',{'mesa_id': JSON.parse(localStorage.mesa).numero })
+					socket.emit('mesa_socket_changed',{'cliente': localStorage.cliente + '_' + localStorage.orden })
+
+					
+				})
+			}else{
+				socket.emit('mesa_socket',{'mesa_id': JSON.parse(localStorage.mesa).numero });
 			}
 		})
 
 		socket.on('disconnect',function(err){ //El servidor cae
 			$('#error-fs').fadeIn();
-			$('#error-fs').html('<p></p><p></p><p>Ups!</p><p>Hemos perdido conexi&oacute;n con el servidor</p><p>Espere un momento por favor.</p>')
+			$('#error-fs').html('<p></p><p></p><p style="color:#FFF">Ups!</p><p style="color:#FFF">Hemos perdido conexi&oacute;n con el servidor</p><p style="color:#FFF">Espere un momento por favor.</p>')
 
 			localStorage.serverDown = true;
 		})
 
 
 		function goQuery(){
+		
+
+			if(!socket.socket.connected){
+				$('#error-fs').fadeIn();
+				$('#error-fs').html('<p></p><p></p><p style="color:#FFF">Ups!</p><p style="color:#FFF">Hemos perdido conexi&oacute;n con el servidor</p><p style="color:#FFF">Espere un momento por favor.</p>')
+
+				localStorage.serverDown = true;
+			}
+
+
 			
 			$('#getName').on('submit',function(e){
 				e.preventDefault();
@@ -88,6 +113,12 @@
 
 				if(!localStorage.mesa){
 					alertify.alert('Vuelva a intentarlo en unos segundos');
+					return false;
+				}
+
+
+				if(nombre == ''){
+					alertify.alert('Nombre de cliente requerido');
 					return false;
 				}
 

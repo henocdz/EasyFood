@@ -15,8 +15,46 @@ header{
 	width: 100%;
 }
 
+#ordenados{
+	display: block;
+	margin-top: 3em;
+}
+
 #alertify{
 	color: #000;
+}
+
+.p-orden{
+	display: block;
+	background: rgba(191,60,14,0.8);
+	border-top: 1px solid rgb(191,60,14);
+	overflow: hidden;
+	width: 100%;
+}
+
+.p-ordered{
+	display: block;
+	width: 90%;
+	margin: 0 auto;
+	padding:0.5em 0;
+}
+
+.p-desc{
+	display: block;
+	width: 80%;
+	margin:0 auto;
+	padding-bottom: 0.5em;
+}
+
+.po-del{
+	float: right;
+	cursor: pointer;
+	width: 15px;
+}
+
+.po-del img{
+	display: block;
+	width: 100%;
 }
 
 .rest-logo {
@@ -165,6 +203,7 @@ display: inline-block;
 	display: block;
 	margin-top: 2em;
 	height: 70px;
+	overflow: hidden;
 }
 
 .menitem.list .pic{
@@ -179,19 +218,29 @@ display: inline-block;
 }
 
 .menitem.list .desc{
-	width: 52%;
+	width: 45%;
+	display: inline-block;
+	vertical-align: top;
+	top:0;
+	padding: 0.3em 0;
 	overflow: hidden;
 }
 
 .menitem.list .desc h2{
+	display: block;
+	top:0;
+	overflow: hidden;
+	white-space: nowrap;
+	width: 100%;
 	font-size: 1.3em;
+	text-overflow: ellipsis;
 }
 
-.menitem.list .desc h2{
+.menitem.list .desc p{
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-}
+ }
 
 .menitem.list .btns{
 	float: right;
@@ -201,6 +250,15 @@ display: inline-block;
 
 .menitem.list .btns ul{
 	list-style: none;
+}
+
+
+.menitem.list p{
+	overflow: hidden;
+	/*white-space: nowrap;*/
+	text-overflow: ellipsis;
+	display: block;
+	width: 100%;
 }
 
 .menitem.list .btns ul li{
@@ -277,9 +335,9 @@ display: inline-block;
 nav#menu {
 	background: #bf3c0e;
 	display: none;
-	position: absolute;
+	position: fixed;
 	top:0;
-	right: 0;
+	right: -1500px;
 	z-index: 3;
 	min-width: 70%;
 }
@@ -297,7 +355,9 @@ nav#menu ul li{
 	border-bottom: 2px solid #852706;
 }
 
-nav#menu ul li span{
+nav#menu ul li a{
+	color: #FFF;
+	text-decoration: none;
 	display: block;
 	margin-left: 2%;
 }
@@ -308,7 +368,7 @@ button.confirmar_btn{
 	color: #FFF;
 	cursor: pointer;
 	font-weight: bold;
-	margin: 1em auto;
+	margin: 0 auto;
 	padding: 0.5em;
 	background: #e86b05;
 	text-align: center;
@@ -329,7 +389,7 @@ button.confirmar_btn{
 	text-align: center;
 }
 
-#loader>h2{
+#loader>h2,#error-fs>h2 {
 	display: block;
 	margin-top: 40%;
 }
