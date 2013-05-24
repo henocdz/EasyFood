@@ -25,33 +25,38 @@
 
 		<section id="ordenes-box">
 			<select id="ordenes">
-				<option value="1">1 - Juan</option>
-				<option value="2">2 - Pedro</option>
 			</select>			
 		</section>
 
 		<section id="orden-info">
 
 			<section id="platillos">
-				<h2>Mostrar/Ocultar platillos </h2>
+
 				<section id="titulos">
 					<span class="nombre">Platillo</span>
 					<span class="precio">Precio</span>
 				</section>
 				<section id="platills">
 
-					<article class="platillo">
-						<span class="nombre">Hamburguesa con qeuso</span>
-						<span class="precio">$ 50.0 </span>
-					</article>
+					
 
 				</section>
 
 			</section>
 
+			<section id="subtotal">
+				<span class="nombre">Subtotal:</span>
+				<span class="precio">$ 0.0 </span>
+			</section>
+
+			<section id="Servicio">
+				<span class="nombre">Propina:</span>
+				<span class="precio">$ 0.0 </span>
+			</section>
+
 			<section id="total">
 				<span class="nombre">Total:</span>
-				<span class="precio">$ 50.0 </span>
+				<span class="precio">$ 0.0 </span>
 			</section>
 
 			<button id="pagar">Efectuar Pago</button>
@@ -61,18 +66,83 @@
 	</section>
 
 	<script src="static/js/jquery-2.0.min.js"></script>
+
+	<script src="static/js/socket.io.js"></script>
+	<script src="static/js/socket.js"></script>
 	<script src="static/js/ddslick.js"></script>
 
 	<script>
 
 		$(function(){
-			$('#ordenes').ddslick({
-				onSelected: function(info){ //Cuando cambie seleccion
-					var selectedValue = info.selectedData.value; 
-					alert(selectedValue)
-				},
-				width: "100%",
-			});
+
+			var s;
+			var first = -1;
+
+
+			$('#pagar').on('click',function(e){
+				e.preventDefault();
+
+
+				socket.emit('cerrar_mesa',{orden: s})
+
+			})
+
+			socket.on('close_order',function(){
+				location.reload();
+			})
+
+			$.get(node+'/get_ordenes_caja',{},function(ordenes){
+
+				$.each(ordenes,function(i,v){
+
+					var op = $('<option value="'+v.Oid+'">'+v.Oid+' - '+v.Cn+'</option> ');
+					$('#ordenes').append(op);
+
+				})
+
+				$('#ordenes').ddslick({
+					onSelected: function(info){ //Cuando cambie seleccion
+						first++;
+						if(!first)
+							return;
+
+
+						$('#orden-info').slideUp('fast',function(){ $('#orden-info').slideDown(); });
+
+						var selectedValue = info.selectedData.value; 
+						
+						s = selectedValue;
+
+						$.get(node+'/info_pago',{orden_id: selectedValue},function(info){
+
+							$('#platills').text('');
+
+							$.each(info.platillos,function(i,v){
+
+								var neto = v.total;
+								var platillo = $('<article class="platillo"><span class="nombre">'+(v.q>1?'('+q+')':'')+ v.n +'</span><span class="precio">$ '+neto.toFixed(2)+' </span></article>');
+								$('#platills').append(platillo)
+
+							})
+
+							console.log(info)
+
+							var subtotal = info.total/(1+info.propina);
+							var propina =  info.total - subtotal;
+
+							$('#total>.precio').text((info.total).toFixed(2))
+							$('#subtotal>.precio').text(subtotal.toFixed(2))
+							$('#servicio>.precio').text(propina.toFixed(2))
+
+						},'jsonp')
+						
+					},
+					width: "100%",
+				});
+
+
+			},'jsonp');
+
 		})
 
 	</script>

@@ -37,7 +37,7 @@ app.get('/',routes.index);
 //app.get('/',routes.index);
 app.get('/users', user.list);
 app.get('/get_platillos', brain.platillos )
-app.get('/get_ordenes', brain.ordenes )
+
 app.get('/registrar.json', function(req,res){
 
   //console.log(mesas[]?true:false)
@@ -46,8 +46,6 @@ app.get('/registrar.json', function(req,res){
   for(e in mesas)
 	if(e == req.query['no_mesa'])
 	  r = true;
-  
-
 
   if(r){
 	var J_son = JSON.stringify({st: false });
@@ -57,9 +55,9 @@ app.get('/registrar.json', function(req,res){
 
   brain.registrar_mesa(req,res);
 })
-
+app.get('/info_pago', brain.info_pago);
 app.get('/estado_platillo',brain.estado);
-
+app.get('/get_ordenes_caja',brain.ordenes)
 var a = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
@@ -181,7 +179,7 @@ sio.sockets.on('connection',function(socket){
 
 		if(clientes[info.cliente]){
 
-		  clientes[info.cliente].agregarPlatillo(p,plats[p],function(estado,platillo){
+		  clientes[info.cliente].agregarPlatillo(p,plats[p],function(estado,platillo,platillo_id_timestamp){
 		  	enviados++;
 
 		  	if(estado == 0){
@@ -189,16 +187,19 @@ sio.sockets.on('connection',function(socket){
 		  		return;
 		  	}
 		  	
+
+		  	if(cocina){
+		  		sio.sockets.socket(cocina.socket_id).emit('new_platillo',{'platillo_id': platillo_id_timestamp,'platillo':JSON.stringify(platillo),'orden': clientes[info.cliente].orden.numero })
+		  		console.log(platillo_id_timestamp)
+		  	}
+
 		  	if(contados==enviados){
-		  		console.log('finfinfinfin')
 		  		socket.emit('platillos_agregados',{});
 		  	}
 
 		  	//console.log(clientes[info.cliente].orden)
 
-		  	if(cocina){
-		  		sio.sockets.socket(cocina.socket_id).emit('new_platillo',{'platillo_id':p,'platillo':JSON.stringify(platillo),'orden': clientes[info.cliente].orden.numero })
-		  	}
+
 
 
 		  	console.log('\n |<| << PLATILLO ENVIADO A COCINA  >>|>| \n');
@@ -215,6 +216,40 @@ sio.sockets.on('connection',function(socket){
 
   socket.on('mesa_socket',function(info){
 	mesas[info.mesa_id].socket_id = socket.id; 
+  })
+
+  socket.on('cerrar_mesa',function(info){
+
+  	var orden = info.orden;
+  	for(cliente in clientes){
+
+  		console.log(cliente)
+
+  		if(clientes[cliente].orden.numero == orden ){
+  			var mesan = clientes[cliente].mesa.numero;
+		  	if(mesas[mesan]){
+		  		
+		  		brain.registrar_pago(orden,function(){
+		  			sio.sockets.socket(mesas[mesan].socket_id).emit('close_order',{});
+		  			socket.emit('close_order',{})
+		  		})
+
+		  	}
+  		}
+  	}
+
+
+  })
+
+  socket.on('cerrar_orden',function(info){
+
+  	if(clientes[info.cliente]){
+
+		brain.cerrar_orden(clientes[info.cliente].orden.numero,info.pro,function(e){
+			socket.emit('orden_cerrada',{'e': e});
+		});
+	}
+
   })
 
 
@@ -245,7 +280,7 @@ sio.sockets.on('connection',function(socket){
   socket.on('cocina', function(d){
 	cocina = new core.Recepcionista(socket.id);
 	//sio.sockets.socket(cocina.socket_id).emit('mesa_added',{'mesas': JSON.stringify( mesas )});
-	console.log("\n\n => COCINA =>> " +  JSON.stringify(recepcion))
+	console.log("\n\n => COCINA =>> " +  JSON.stringify(cocina))
   })
 
 })

@@ -167,7 +167,7 @@ header .title h1, header .title h3{
 }
 
 #orden-info{
-	display: block;
+	display: none;
 	margin: 1% auto;
 	width:60%;
 }
@@ -177,15 +177,29 @@ header .title h1, header .title h3{
 }
 
 #orden-info #platillos #titulos{
+	background: rgb(189,59,13);
+	color: #FFF;
+	font-weight: bold;
 	border-bottom: 2px solid rgb(191,60,14);
 }
 
-#orden-info #total{
+#orden-info #total,#orden-info #subtotal,#orden-info #servicio{
 	background: #a92e31;
 }
 
 #orden-info #platillos span{
 	padding: 0.5em 0;
+}
+
+#orden-info #pagar{
+	background: #e86b05;
+	cursor: pointer;
+	display: block;
+	width: 40%;
+	margin: 1em auto;
+	border:0;
+	outline:0;
+	padding: 0.5em;
 }
 
 #orden-info #platillos .nombre{
@@ -201,14 +215,14 @@ header .title h1, header .title h3{
 	width: 26%;
 }
 
-#orden-info #total .nombre{
+#orden-info #total .nombre,#orden-info #subtotal .nombre,#orden-info #servicio .nombre{
 	display: inline-block;
 	padding: 0.5em 0;
 	color: #FFF;
 	text-align: left;
 	margin-left: 4em;
 }
-#orden-info #total .precio{
+#orden-info #total .precio,#orden-info #subtotal .precio,#orden-info #servicio .precio{
 	float: right;
 	padding: 0.5em 0;
 	color: #FFF;

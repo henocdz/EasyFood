@@ -23,7 +23,9 @@ function goQuery(){
 
 	//Asignar nombre de cliente y numero de mesa en GUI
 	$('#cliente-nombre').text(localStorage.cliente);
-	$('#mesa-numero').text(JSON.parse(localStorage.mesa).numero);
+	//$('#mesa-numero').text(JSON.parse(localStorage.mesa).numero);
+	$('#mesa-numero').text(localStorage.orden);
+
 
 
 	var m = JSON.parse(localStorage.mesa);
@@ -97,7 +99,8 @@ function goQuery(){
 
 				localStorage.platillos = JSON.stringify({});
 
-				socket.off('platillos_agregados')
+				socket.removeEventListener('platillos_agregados');
+
 				
 			})
 
@@ -207,7 +210,39 @@ function closeOrder(){
 
 function preCloseOrder(){
 	//Notificar al servidor que se quiere cerrar cuenta / Eliminar todo del servidor / Enviar a Caja
-	//Reiniciar dispositivo desde caja
+	//Reiniciar dispositivo desde caja 
+
+
+	alertify.set({ labels: {
+		ok: 'S&iacute;',
+		cancel: 'No'
+	}})
+
+	$('#error-fs').fadeIn();
+
+	alertify.confirm('¿Desea agregar el 10% de servicio?',function(e){
+		var p = 0;
+
+		if(e)
+			p = 1;
+		
+
+		socket.emit('cerrar_orden',{'cliente': localStorage.cliente + '_' + localStorage.orden, 'pro': 1})
+
+		$('#error-fs').html('<p></p><p></p><p>Cerrando orden</p><p>Espere un momento por favor.</p>')
+
+
+			socket.on('orden_cerrada',function(e){
+
+				$('#error-fs').html('<p></p><p></p><p>Orden Cerrada con &eacute;xito</p><p>Puede pasar a apagar a caja.</p>')
+
+				socket.on('close_order',function(e){
+					closeOrder();
+				})
+			}) 
+			///------------
+
+	})
 }
 
 

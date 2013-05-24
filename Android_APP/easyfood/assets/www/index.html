@@ -71,7 +71,11 @@
 			$('#error-fs').fadeOut();
 
 			if(localStorage.serverDown){
+				////alert(localStorage.serverDown)
 				localStorage.serverDown = false;
+				//alert(localStorage.serverDown)
+				//location.reload();
+				
 				var m = JSON.parse(localStorage.mesa);
 				
 				socket.emit('new_mesa',{'numero': m.numero, 'estado': m.estado, 'capacidad':m.capacidad})
@@ -99,10 +103,7 @@
 		
 
 			if(!socket.socket.connected){
-				$('#error-fs').fadeIn();
-				$('#error-fs').html('<p></p><p></p><p style="color:#FFF">Ups!</p><p style="color:#FFF">Hemos perdido conexi&oacute;n con el servidor</p><p style="color:#FFF">Espere un momento por favor.</p>')
-
-				localStorage.serverDown = true;
+			//	alertify.alert('Ha ocurrido un error. Vuelve a intentarlo')
 			}
 
 

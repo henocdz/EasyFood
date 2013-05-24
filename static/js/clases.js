@@ -65,7 +65,7 @@ exports.Orden = function(no_orden){
 
 			console.log('=>> PLATILLO AGREGADO A ORDEN: '+self.numero+' PLATILLO: '+pla.observaciones);
 
-			sendCocina(1,pla);
+			sendCocina(1,pla,p);
 
 		})
 	}
